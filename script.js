@@ -1,5 +1,5 @@
     // ==================== DADOS ====================
-    const STORAGE_KEY = 'ginastica_sistema_v1';
+    const STORAGE_KEY = 'Vem_pra_Quadra_v1';
 
     let chartTendencia = null;
 
