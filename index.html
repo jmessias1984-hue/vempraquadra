@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#0f766e" />
+  <meta name="description" content="Gestão de alunos, presença, pagamentos e rotina de ginástica." />
+  <title>Sistema Ginástica - Gestão de Alunos</title>
+  <link rel="stylesheet" href="styles.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+      <div>
+        <h1>Sistema Ginástica</h1>
+        <p>Presença • Pagamentos • Comprovantes</p>
+      </div>
+      <div class="header-actions"><button type="button" class="header-button" onclick="exportarBackup()">Exportar backup</button><label class="header-button file-button">Importar backup<input type="file" accept="application/json,.json" onchange="importarBackup(this)" /></label></div>
+    </div>
+  </header>
+
+  <nav aria-label="Navegação principal">
+    <button class="nav-btn active" data-page="dashboard">Início</button>
+    <button class="nav-btn" data-page="alunos">Alunos</button>
+    <button class="nav-btn" data-page="presenca">Presença</button>
+    <button class="nav-btn" data-page="rotina">Rotina</button>
+    <button class="nav-btn" data-page="pagamentos">Pagamentos</button>
+    <button class="nav-btn" data-page="relatorios">Relatórios</button>
+  </nav>
+
+  <main>
+    <!-- DASHBOARD -->
+    <section id="page-dashboard" class="page active">
+      <div class="stats">
+        <div class="stat-card">
+          <div class="value" id="stat-alunos">0</div>
+          <div class="label">Alunos ativos</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="stat-hoje">0</div>
+          <div class="label">Presentes hoje</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="stat-pagos">0</div>
+          <div class="label">Pagos este mês</div>
+        </div>
+        <div class="stat-card">
+          <div class="value" id="stat-pendentes">0</div>
+          <div class="label">Pendentes</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📅 Turmas Quarta e Sexta</h2>
+        <div id="proximas-aulas"></div>
+      </div>
+
+      <div class="card">
+        <h2>⚡ Ações rápidas</h2>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <button class="btn btn-primary btn-block" onclick="goTo('presenca')">Registrar presença de hoje</button>
+          <button class="btn btn-outline btn-block" onclick="goTo('pagamentos')">Ver pagamentos do mês</button>
+          <button class="btn btn-outline btn-block" onclick="openModalAluno()">+ Cadastrar novo aluno</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ALUNOS -->
+    <section id="page-alunos" class="page">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h2 style="margin:0">👥 Alunos</h2>
+          <button class="btn btn-primary btn-sm" onclick="openModalAluno()">+ Novo</button>
+        </div>
+        <div id="lista-alunos"></div>
+      </div>
+    </section>
+
+    <!-- PRESENÇA -->
+    <section id="page-presenca" class="page">
+      <div class="card">
+        <h2>✅ Registrar Presença</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Data</label>
+            <input type="date" id="presenca-data" />
+          </div>
+          <div class="form-group">
+            <label>Turma</label>
+            <select id="presenca-turma">
+              <option value="05:00">05:00 (Manhã)</option>
+              <option value="19:00">19:00 (Noite)</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="carregarPresenca()" style="margin-bottom: 16px;">Carregar lista</button>
+        <div id="lista-presenca" class="attendance-grid"></div>
+        <button class="btn btn-success btn-block" id="btn-salvar-presenca" style="display:none; margin-top: 16px;" onclick="salvarPresenca()">Salvar presença</button>
+      </div>
+    </section>
+
+    <!-- PAGAMENTOS -->
+    <section id="page-pagamentos" class="page">
+      <div class="card">
+        <h2>💰 Pagamentos</h2>
+        <div class="filter-bar">
+          <select id="pagamento-mes"></select>
+          <select id="pagamento-ano"></select>
+        </div>
+        <div id="lista-pagamentos"></div>
+      </div>
+    </section>
+
+    <!-- RELATÓRIOS DE FREQUÊNCIA -->
+    <section id="page-relatorios" class="page">
+      <div class="card">
+        <h2>📊 Relatório de Frequência</h2>
+        <div class="filter-bar">
+          <select id="relatorio-mes"></select>
+          <select id="relatorio-ano"></select>
+          <select id="relatorio-turma">
+            <option value="todas">Todas as turmas</option>
+            <option value="05:00">Apenas 05:00</option>
+            <option value="19:00">Apenas 19:00</option>
+          </select>
+        </div>
+
+        <div class="stats" id="relatorio-stats" style="margin-top: 8px;">
+          <div class="stat-card">
+            <div class="value" id="rel-aulas">0</div>
+            <div class="label">Aulas no período</div>
+          </div>
+          <div class="stat-card">
+            <div class="value" id="rel-media">0%</div>
+            <div class="label">Frequência média</div>
+          </div>
+          <div class="stat-card">
+            <div class="value" id="rel-melhor">-</div>
+            <div class="label">Maior frequência</div>
+          </div>
+          <div class="stat-card">
+            <div class="value" id="rel-presentes">0</div>
+            <div class="label">Total de presenças</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📈 Tendência de Frequência</h2>
+        <div style="position: relative; height: 260px; width: 100%;">
+          <canvas id="grafico-tendencia"></canvas>
+        </div>
+        <p id="grafico-legenda" style="font-size: 0.8rem; color: var(--muted); margin-top: 10px; text-align: center;"></p>
+      </div>
+
+      <div class="card">
+        <h2>Ranking de Frequência</h2>
+        <div id="lista-frequencia"></div>
+      </div>
+
+      <!-- Análise de Padrões de Faltas -->
+      <div class="card">
+        <h2>🔍 Análise de Padrões de Faltas</h2>
+        <div id="analise-faltas"></div>
+      </div>
+
+      <!-- Detalhe do aluno (oculto por padrão) -->
+      <div class="card" id="detalhe-aluno-card" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h2 style="margin:0" id="detalhe-aluno-nome">Detalhe</h2>
+          <button class="btn btn-outline btn-sm" onclick="fecharDetalheAluno()">Fechar</button>
+        </div>
+        <div id="detalhe-aluno-conteudo"></div>
+      </div>
+    </section>
+
+    <section id="page-rotina" class="page">
+      <div class="card">
+        <h2>Rotina de exercícios</h2>
+        <div class="form-group">
+          <label>Quem usa esta rotina</label>
+          <select id="rotina-alvo" onchange="trocarAlvoRotina()"></select>
+        </div>
+        <p id="rotina-status" style="font-size:0.85rem;color:var(--muted);margin-bottom:12px;"></p>
+        <div id="rotina-acoes" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;"></div>
+        <div id="lista-exercicios"></div>
+      </div>
+      <div class="card" id="card-form-exercicio">
+        <h2 id="form-exercicio-titulo">Novo exercício</h2>
+        <input type="hidden" id="ex-id" />
+        <div class="form-group">
+          <label>Nome do exercício *</label>
+          <input type="text" id="ex-nome" placeholder="Ex: Agachamento" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Séries</label>
+            <input type="text" id="ex-series" placeholder="3" />
+          </div>
+          <div class="form-group">
+            <label>Repetições ou tempo</label>
+            <input type="text" id="ex-reps" placeholder="12 ou 30 segundos" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Observação</label>
+          <input type="text" id="ex-obs" placeholder="Opcional: carga, lado, adaptação" />
+        </div>
+        <button class="btn btn-primary btn-block" type="button" onclick="salvarExercicio()">Salvar exercício</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Aluno -->
+  <div class="modal-overlay" id="modal-aluno">
+    <div class="modal">
+      <h3 id="modal-aluno-titulo">Novo Aluno</h3>
+      <input type="hidden" id="aluno-id" />
+      <div class="form-group">
+        <label>Nome completo *</label>
+        <input type="text" id="aluno-nome" placeholder="Ex: Maria Silva" />
+      </div>
+      <div class="form-group">
+        <label>Telefone / WhatsApp</label>
+        <input type="tel" id="aluno-telefone" placeholder="(79) 99999-9999" />
+      </div>
+      <div class="form-group">
+        <label>Turma do aluno *</label>
+        <select id="aluno-turma" required>
+          <option value="">Selecione a turma</option>
+          <option value="quarta-05:00">Quarta-feira • 05:00</option>
+          <option value="quarta-19:00">Quarta-feira • 19:00</option>
+          <option value="sexta-05:00">Sexta-feira • 05:00</option>
+          <option value="sexta-19:00">Sexta-feira • 19:00</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Valor mensal (R$)</label>
+          <input type="number" id="aluno-valor" value="50" step="0.01" min="0" />
+        </div>
+        <div class="form-group">
+          <label>Data de início</label>
+          <input type="date" id="aluno-inicio" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Observações</label>
+        <textarea id="aluno-obs" rows="2" placeholder="Opcional"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeModal('modal-aluno')">Cancelar</button>
+        <button class="btn btn-primary" onclick="salvarAluno()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Pagamento -->
+  <div class="modal-overlay" id="modal-pagamento">
+    <div class="modal">
+      <h3>Registrar Pagamento</h3>
+      <input type="hidden" id="pag-aluno-id" />
+      <div class="form-group">
+        <label>Aluno</label>
+        <input type="text" id="pag-aluno-nome" readonly style="background:#f1f5f9;" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Mês / Ano</label>
+          <input type="text" id="pag-mes-ano" readonly style="background:#f1f5f9;" />
+        </div>
+        <div class="form-group">
+          <label>Valor (R$)</label>
+          <input type="number" id="pag-valor" step="0.01" min="0" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Data do pagamento</label>
+        <input type="date" id="pag-data" />
+      </div>
+      <div class="form-group">
+        <label>Forma de pagamento</label>
+        <select id="pag-forma">
+          <option value="Pix">Pix</option>
+          <option value="Dinheiro">Dinheiro</option>
+          <option value="Transferência">Transferência</option>
+          <option value="Cartão">Cartão</option>
+          <option value="Outro">Outro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Observação</label>
+        <input type="text" id="pag-obs" placeholder="Opcional" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeModal('modal-pagamento')">Cancelar</button>
+        <button class="btn btn-success" onclick="confirmarPagamento()">Confirmar e gerar informe</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Área de impressão do recibo -->
+  <div id="receipt-print"></div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="script.js" defer></script>
+
+</body>
+</html>
