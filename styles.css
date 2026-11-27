@@ -26,7 +26,6 @@
       padding-bottom: 80px;
     }
 
-    /* Header */
     header {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: white;
@@ -76,23 +75,44 @@
       margin-top: 2px;
     }
 
-    .btn-download {
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .header-button {
       background: #fff;
       color: var(--primary-dark);
       border: none;
       border-radius: 8px;
       padding: 8px 12px;
       font-weight: 700;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       cursor: pointer;
       white-space: nowrap;
     }
 
-    .btn-download:hover {
+    .header-button:hover {
       background: var(--primary-light);
     }
 
-    /* Navigation */
+    .file-button {
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .file-button input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
     nav {
       display: flex;
       background: var(--card);
