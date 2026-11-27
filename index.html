@@ -3,21 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <meta name="theme-color" content="#0f766e" />
+  <meta name="theme-color" content="#1e4db7" />
   <meta name="description" content="Gestão de alunos, presença, pagamentos e rotina de ginástica." />
-  <title>Sistema Ginástica - Gestão de Alunos</title>
+  <title>Érica Messias · Vem pra Quadra</title>
   <link rel="stylesheet" href="styles.css" />
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <header>
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
-      <div>
-        <h1>Vem pra Quadra</h1>
-        <p>Presença • Pagamentos • Comprovantes</p>
+    <div class="header-inner">
+      <div class="brand">
+        <img src="logo.jpeg" alt="Érica Messias - Professora de Educação Física" class="brand-logo" />
+        <div class="brand-text">
+          <h1>Érica Messias</h1>
+          <p>Vem pra Quadra · Presença e Pagamentos</p>
+        </div>
       </div>
-      <div class="header-actions"><button type="button" class="header-button" onclick="exportarBackup()">Exportar backup</button><label class="header-button file-button">Importar backup<input type="file" accept="application/json,.json" onchange="importarBackup(this)" /></label></div>
+      <div class="header-actions">
+        <button type="button" class="header-button" onclick="exportarBackup()">Exportar backup</button>
+        <label class="header-button file-button">Importar backup<input type="file" accept="application/json,.json" onchange="importarBackup(this)" /></label>
+      </div>
     </div>
   </header>
 
@@ -31,7 +37,6 @@
   </nav>
 
   <main>
-    <!-- DASHBOARD -->
     <section id="page-dashboard" class="page active">
       <div class="stats">
         <div class="stat-card">
@@ -67,7 +72,6 @@
       </div>
     </section>
 
-    <!-- ALUNOS -->
     <section id="page-alunos" class="page">
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -78,7 +82,6 @@
       </div>
     </section>
 
-    <!-- PRESENÇA -->
     <section id="page-presenca" class="page">
       <div class="card">
         <h2>✅ Registrar Presença</h2>
@@ -101,7 +104,6 @@
       </div>
     </section>
 
-    <!-- PAGAMENTOS -->
     <section id="page-pagamentos" class="page">
       <div class="card">
         <h2>💰 Pagamentos</h2>
@@ -113,7 +115,6 @@
       </div>
     </section>
 
-    <!-- RELATÓRIOS DE FREQUÊNCIA -->
     <section id="page-relatorios" class="page">
       <div class="card">
         <h2>📊 Relatório de Frequência</h2>
@@ -160,13 +161,11 @@
         <div id="lista-frequencia"></div>
       </div>
 
-      <!-- Análise de Padrões de Faltas -->
       <div class="card">
         <h2>🔍 Análise de Padrões de Faltas</h2>
         <div id="analise-faltas"></div>
       </div>
 
-      <!-- Detalhe do aluno (oculto por padrão) -->
       <div class="card" id="detalhe-aluno-card" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
           <h2 style="margin:0" id="detalhe-aluno-nome">Detalhe</h2>
@@ -213,7 +212,6 @@
     </section>
   </main>
 
-  <!-- Modal Aluno -->
   <div class="modal-overlay" id="modal-aluno">
     <div class="modal">
       <h3 id="modal-aluno-titulo">Novo Aluno</h3>
@@ -257,7 +255,6 @@
     </div>
   </div>
 
-  <!-- Modal Pagamento -->
   <div class="modal-overlay" id="modal-pagamento">
     <div class="modal">
       <h3>Registrar Pagamento</h3>
@@ -278,7 +275,7 @@
       </div>
       <div class="form-group">
         <label>Data do pagamento</label>
-        <input type="date" id="pag-data" />
+          <input type="date" id="pag-data" />
       </div>
       <div class="form-group">
         <label>Forma de pagamento</label>
@@ -301,9 +298,7 @@
     </div>
   </div>
 
-  <!-- Área de impressão do recibo -->
   <div id="receipt-print"></div>
-
   <div class="toast" id="toast"></div>
 
   <script src="script.js" defer></script>
