@@ -469,7 +469,7 @@
           <div class="receipt-header">
             <h1>INFORME DE PAGAMENTO</h1>
             <p>Vem pra Quadra</p>
-            <p>Quarta e Sexta • 05:00 e 19:00</p>
+            <p>Quarta e Sexta • 19:15</p>
           </div>
           <div class="receipt-body">
             <div class="row"><span>Aluno(a):</span><strong>${aluno.nome}</strong></div>
@@ -480,7 +480,7 @@
             <div class="receipt-value">${formatMoney(pag.valor)}</div>
             <p style="text-align:center; font-size:0.9rem; color:#64748b;">
               Pagamento confirmado referente às aulas de ginástica<br>
-              (Quartas e sextas-feiras • 05:00 e 19:00)
+              (Quartas e sextas-feiras • 19:15)
             </p>
           </div>
           <div class="receipt-footer">
@@ -533,7 +533,7 @@
       }
       linhas.push(
         ``,
-        `Aulas: Quartas-feiras e sextas-feiras • 05:00 e 19:00`,
+        `Aulas: Quartas-feiras e sextas-feiras • 19:15`,
         ``,
         `Obrigado pela confiança! 🤸`
       );
@@ -755,14 +755,14 @@
     function renderAnaliseFaltas(ano, mes, filtroTurma, ranking) {
       const container = document.getElementById('analise-faltas');
       const diasAula = getDiasDeAulaNoMes(parseInt(ano), parseInt(mes));
-      const turmas = filtroTurma === 'todas' ? ['05:00', '19:00'] : [filtroTurma];
+      const turmas = filtroTurma === 'todas' ? ['19:15'] : [filtroTurma];
 
       if (diasAula.length === 0 || ranking.length === 0) {
         container.innerHTML = '<div class="empty">Dados insuficientes para análise.</div>';
         return;
       }
 
-      // 1. Faltas por horário (Quarta/Sexta × 05h/19h)
+      // 1. Faltas por horário (Quarta/Sexta × 19:15h)
       const faltasPorSlot = {};
       const totalPorSlot = {};
       const slots = [];
@@ -811,16 +811,15 @@
       const padroesIndividuais = [];
       ranking.forEach(r => {
         if (r.totalSessoes === 0) return;
-        const faltasPorTurma = { '05:00': 0, '19:00': 0 };
-        const totalPorTurma = { '05:00': 0, '19:00': 0 };
+        const faltasPorTurma = { '19:15': 0 };
+        const totalPorTurma = { '19:15': 0 };
 
         r.detalhes.forEach(d => {
           totalPorTurma[d.turma] = (totalPorTurma[d.turma] || 0) + 1;
           if (!d.veio) faltasPorTurma[d.turma] = (faltasPorTurma[d.turma] || 0) + 1;
         });
 
-        const taxa05 = totalPorTurma['05:00'] > 0 ? faltasPorTurma['05:00'] / totalPorTurma['05:00'] : 0;
-        const taxa19 = totalPorTurma['19:00'] > 0 ? faltasPorTurma['19:00'] / totalPorTurma['19:00'] : 0;
+        const taxa19 = totalPorTurma['19:15'] > 0 ? faltasPorTurma['19:15'] / totalPorTurma['19:15'] : 0;
 
         // Só destaca se tiver diferença significativa e pelo menos 2 faltas
         const totalFaltas = (faltasPorTurma['05:00'] || 0) + (faltasPorTurma['19:00'] || 0);
@@ -829,13 +828,13 @@
             padroesIndividuais.push({
               nome: r.aluno.nome,
               padrao: 'Falta mais na turma das 05:00',
-              detalhe: `${faltasPorTurma['05:00']} faltas de manhã vs ${faltasPorTurma['19:00'] || 0} à noite`
+              detalhe: `${faltasPorTurma['05:00']} faltas de manhã vs ${faltasPorTurma['19:15'] || 0} à noite`
             });
           } else if (taxa19 >= 0.6 && taxa19 - taxa05 >= 0.3) {
             padroesIndividuais.push({
               nome: r.aluno.nome,
-              padrao: 'Falta mais na turma das 19:00',
-              detalhe: `${faltasPorTurma['19:00']} faltas à noite vs ${faltasPorTurma['05:00'] || 0} de manhã`
+              padrao: 'Falta mais na turma das 19:15',
+              detalhe: `${faltasPorTurma['19:15']} faltas à noite vs ${faltasPorTurma['05:00'] || 0} de manhã`
             });
           }
         }
