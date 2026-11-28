@@ -125,11 +125,8 @@
     // ==================== ALUNOS ====================
     function nomeTurma(valor) {
       const nomes = {
-        'quarta-05:00': 'Quarta-feira • 05:00',
-        'quarta-19:00': 'Quarta-feira • 19:00',
-        'sexta-05:00': 'Sexta-feira • 05:00',
-        'sexta-19:00': 'Sexta-feira • 19:00'
-      };
+            'quarta-19:00': 'Quarta-feira • 19:15',
+            'sexta-19:00': 'Sexta-feira • 19:15'};
       return nomes[valor] || '';
     }
 
